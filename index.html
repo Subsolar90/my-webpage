@@ -9,33 +9,40 @@
 <body>
     <div class="cafe">
         <header class="header">
-            <h1 class="sign">☕ Morning Coffee ☕</h1>
-            <p class="subtitle">Paul &amp; Phil's daily ritual</p>
+            <h1 class="sign">Morning Coffee</h1>
+            <p class="subtitle">a slow ritual for Paul &amp; Phil</p>
         </header>
 
         <div class="scene">
-            <!-- Wall -->
+            <!-- Background -->
             <div class="wall"></div>
+            <div class="dawn-glow"></div>
 
-            <!-- Wall decorations -->
+            <!-- Wall decor -->
+            <div class="window-frame">
+                <div class="window-pane"></div>
+                <div class="window-cross-v"></div>
+                <div class="window-cross-h"></div>
+            </div>
+
             <div class="shelf">
-                <span>☕</span><span>☕</span><span>☕</span>
-                <span>🥐</span>
+                <span class="shelf-cup">☕</span>
+                <span class="shelf-cup">☕</span>
+                <span class="shelf-cup">🥐</span>
             </div>
 
             <div class="menu-board">
-                <div class="menu-title">~ menu ~</div>
-                <div>cappuccino · 3€</div>
-                <div>flat white · 3€</div>
-                <div>smile · free</div>
+                <div class="menu-title">~ today ~</div>
+                <div>cappuccino</div>
+                <div>flat white</div>
+                <div class="menu-aside">made with love</div>
             </div>
 
-            <div class="window-frame">
-                <div class="window-pane"></div>
-            </div>
+            <div class="hanging-plant">🌿</div>
 
-            <!-- Steam from machine -->
-            <div class="steam" id="steam"><span></span><span></span><span></span></div>
+            <!-- Sleepy Z's (floating above Paul & Phil at start) -->
+            <div class="zzz zzz-paul" id="zzz-paul"><span>z</span><span>z</span><span>z</span></div>
+            <div class="zzz zzz-phil" id="zzz-phil"><span>z</span><span>z</span><span>z</span></div>
 
             <!-- Thought bubbles -->
             <div class="bubble bubble-paul">
@@ -45,36 +52,50 @@
                 <span id="phil-thought">...</span>
             </div>
 
-            <!-- Barista -->
+            <!-- Barista (behind machine) -->
             <div class="barista" id="barista">
-                <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 160 280" xmlns="http://www.w3.org/2000/svg">
                     <!-- Apron / chest -->
-                    <path d="M 18,90 Q 50,75 82,90 L 82,110 L 18,110 Z" fill="#f5f0e8"/>
-                    <rect x="18" y="86" width="64" height="6" fill="#3a3a3a"/>
-                    <!-- Apron strings -->
-                    <line x1="30" y1="86" x2="36" y2="78" stroke="#3a3a3a" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="70" y1="86" x2="64" y2="78" stroke="#3a3a3a" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M 30,210 Q 80,190 130,210 L 130,280 L 30,280 Z" fill="#ede0c8"/>
+                    <!-- Sweater under apron edges -->
+                    <rect x="30" y="200" width="100" height="14" fill="#8b6a5a"/>
+                    <!-- Apron straps -->
+                    <line x1="46" y1="208" x2="58" y2="186" stroke="#6a4a30" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="114" y1="208" x2="102" y2="186" stroke="#6a4a30" stroke-width="3" stroke-linecap="round"/>
+                    <!-- Apron pocket -->
+                    <rect x="60" y="230" width="40" height="22" fill="none" stroke="#c4b698" stroke-width="2" rx="3"/>
                     <!-- Neck -->
-                    <rect x="42" y="68" width="16" height="14" fill="#f5d0a8"/>
-                    <!-- Head -->
-                    <circle cx="50" cy="42" r="28" fill="#f5d0a8"/>
-                    <!-- Hair / beanie -->
-                    <path d="M 22,42 Q 50,8 78,42 L 78,32 Q 50,8 22,32 Z" fill="#3a2a1a"/>
-                    <!-- Beanie band -->
-                    <rect x="22" y="38" width="56" height="5" fill="#5a3a1a"/>
-                    <!-- Eyes -->
-                    <circle cx="40" cy="44" r="2.5" fill="#222"/>
-                    <circle cx="60" cy="44" r="2.5" fill="#222"/>
+                    <rect x="66" y="178" width="28" height="20" fill="#f5d4b8"/>
+                    <!-- Head (big & round) -->
+                    <circle cx="80" cy="118" r="54" fill="#f5d4b8"/>
+                    <!-- Ears -->
+                    <ellipse cx="28" cy="120" rx="6" ry="9" fill="#f5d4b8"/>
+                    <ellipse cx="132" cy="120" rx="6" ry="9" fill="#f5d4b8"/>
+                    <!-- Beanie -->
+                    <path d="M 26,118 Q 80,52 134,118 L 134,98 Q 80,50 26,98 Z" fill="#8fa890"/>
+                    <path d="M 26,114 L 134,114 L 134,118 L 26,118 Z" fill="#6a8870"/>
+                    <!-- Beanie pompom -->
+                    <circle cx="80" cy="56" r="9" fill="#c8dcc0"/>
+                    <circle cx="78" cy="54" r="3" fill="#dde8d5" opacity="0.7"/>
+                    <!-- Eyes (closed smiling arcs) -->
+                    <path d="M 56,124 Q 64,132 72,124" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 88,124 Q 96,132 104,124" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
                     <!-- Mustache -->
-                    <path d="M 38,55 Q 50,59 62,55" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 58,146 Q 80,152 102,146" stroke="#5a3a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
                     <!-- Smile -->
-                    <path d="M 42,60 Q 50,64 58,60" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M 66,158 Q 80,166 94,158" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <!-- Cheeks -->
+                    <circle cx="46" cy="146" r="7" fill="#ffb0a0" opacity="0.55"/>
+                    <circle cx="114" cy="146" r="7" fill="#ffb0a0" opacity="0.55"/>
+                    <!-- Nose -->
+                    <ellipse cx="80" cy="134" rx="3.5" ry="5" fill="#e8b898" opacity="0.7"/>
                 </svg>
             </div>
 
             <!-- Counter -->
             <div class="counter">
                 <div class="counter-edge"></div>
+                <div class="counter-grain"></div>
             </div>
 
             <!-- Espresso machine -->
@@ -89,101 +110,233 @@
                     </div>
                 </div>
                 <div class="machine-groups">
-                    <div class="group-head"></div>
-                    <div class="group-head"></div>
+                    <div class="group-head">
+                        <div class="coffee-stream"></div>
+                    </div>
+                    <div class="group-head">
+                        <div class="coffee-stream"></div>
+                    </div>
                 </div>
                 <div class="machine-base"></div>
+                <!-- Steam wand sticking out to the right -->
+                <div class="steam-wand">
+                    <div class="wand-tip"></div>
+                </div>
+                <!-- Steam from wand when steaming -->
+                <div class="wand-steam" id="wand-steam">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <!-- Machine boil-steam (top) -->
+                <div class="machine-steam" id="machine-steam">
+                    <span></span><span></span><span></span>
+                </div>
             </div>
 
-            <!-- Coffee cups -->
+            <!-- Action tools (grinder, portafilter, pitcher) -->
+            <div class="tool grinder" id="grinder">
+                <div class="grinder-hopper"></div>
+                <div class="grinder-body"></div>
+                <div class="grinder-spout"></div>
+                <div class="grinder-shake-dots"><span></span><span></span><span></span></div>
+            </div>
+
+            <div class="tool portafilter" id="portafilter">
+                <div class="portafilter-handle"></div>
+                <div class="portafilter-collar"></div>
+                <div class="portafilter-basket"></div>
+            </div>
+
+            <div class="tool pitcher" id="pitcher">
+                <div class="pitcher-body"></div>
+                <div class="pitcher-spout"></div>
+                <div class="pitcher-handle"></div>
+            </div>
+
+            <!-- Cups -->
             <div class="cup" id="cup-paul">
+                <div class="cup-steam"><span></span><span></span><span></span></div>
                 <div class="cup-body"></div>
                 <div class="cup-coffee"></div>
+                <div class="cup-foam"></div>
                 <div class="cup-handle"></div>
             </div>
             <div class="cup" id="cup-phil">
+                <div class="cup-steam"><span></span><span></span><span></span></div>
                 <div class="cup-body"></div>
                 <div class="cup-coffee"></div>
+                <div class="cup-foam"></div>
                 <div class="cup-handle"></div>
             </div>
 
-            <!-- Paul (left) -->
+            <!-- Paul (left, sleepy then happy) -->
             <div class="character paul" id="paul">
-                <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Body -->
-                    <rect x="22" y="118" width="56" height="80" fill="#4a7ab9" rx="6"/>
-                    <!-- Collar -->
-                    <path d="M 38,118 L 50,128 L 62,118 Z" fill="#3a5a90"/>
+                <svg viewBox="0 0 140 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Scarf (cozy detail) -->
+                    <ellipse cx="70" cy="166" rx="44" ry="14" fill="#b07050"/>
+                    <path d="M 56,176 L 50,210 L 60,210 L 64,176 Z" fill="#b07050"/>
+                    <path d="M 56,176 L 50,210 L 60,210 L 64,176 Z" fill="none" stroke="#8a5436" stroke-width="0.5"/>
+
+                    <!-- Body / cozy sweater -->
+                    <path d="M 22,170 Q 70,158 118,170 L 122,280 L 18,280 Z" fill="#c8a878"/>
+                    <!-- Sweater knit lines -->
+                    <path d="M 30,180 L 30,278" stroke="#a88c5e" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+                    <path d="M 70,180 L 70,278" stroke="#a88c5e" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+                    <path d="M 110,180 L 110,278" stroke="#a88c5e" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+
                     <!-- Arms -->
-                    <rect x="10" y="120" width="14" height="60" fill="#4a7ab9" rx="6"/>
-                    <rect x="76" y="120" width="14" height="60" fill="#4a7ab9" rx="6"/>
+                    <ellipse cx="18" cy="220" rx="11" ry="36" fill="#c8a878"/>
+                    <ellipse cx="122" cy="220" rx="11" ry="36" fill="#c8a878"/>
                     <!-- Hands -->
-                    <circle cx="17" cy="182" r="9" fill="#f5d0a8"/>
-                    <circle cx="83" cy="182" r="9" fill="#f5d0a8"/>
-                    <!-- Neck -->
-                    <rect x="42" y="105" width="16" height="14" fill="#f5d0a8"/>
-                    <!-- Head -->
-                    <circle cx="50" cy="72" r="32" fill="#f5d0a8"/>
-                    <!-- Hair (messy) -->
-                    <path d="M 20,68 Q 28,28 50,30 Q 72,28 80,68 Q 80,50 60,40 Q 50,42 40,40 Q 20,50 20,68 Z" fill="#5a3a1a"/>
-                    <!-- Eyes (happy/closed-arc) -->
-                    <path d="M 36,72 Q 40,76 44,72" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    <path d="M 56,72 Q 60,76 64,72" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    <!-- Smile -->
-                    <path d="M 38,86 Q 50,96 62,86" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    <!-- Cheek blush -->
-                    <circle cx="32" cy="82" r="3.5" fill="#ffb0a0" opacity="0.65"/>
-                    <circle cx="68" cy="82" r="3.5" fill="#ffb0a0" opacity="0.65"/>
+                    <circle cx="18" cy="252" r="11" fill="#f5d4b8"/>
+                    <circle cx="122" cy="252" r="11" fill="#f5d4b8"/>
+
+                    <!-- Ears -->
+                    <ellipse cx="20" cy="92" rx="7" ry="10" fill="#f5d4b8"/>
+                    <ellipse cx="120" cy="92" rx="7" ry="10" fill="#f5d4b8"/>
+
+                    <!-- Head (big round) -->
+                    <circle cx="70" cy="86" r="50" fill="#f5d4b8"/>
+
+                    <!-- Hair (messy bedhead) -->
+                    <path d="M 22,82 Q 30,32 70,30 Q 110,32 118,82 Q 118,52 100,42 Q 88,46 70,44 Q 52,46 40,42 Q 22,52 22,82 Z" fill="#7a5232"/>
+                    <!-- Cowlick tuft -->
+                    <path d="M 56,32 Q 60,18 66,28 Q 60,32 56,32 Z" fill="#7a5232"/>
+
+                    <!-- Sleepy face (initial) -->
+                    <g class="face-sleepy">
+                        <!-- Closed/sleepy eyes -->
+                        <path d="M 40,92 Q 49,98 58,92" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M 82,92 Q 91,98 100,92" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <!-- Yawning open mouth -->
+                        <ellipse cx="70" cy="114" rx="7" ry="9" fill="#5a3a2a"/>
+                        <ellipse cx="70" cy="116" rx="4" ry="3" fill="#3a2418"/>
+                    </g>
+
+                    <!-- Awake/content face -->
+                    <g class="face-awake">
+                        <!-- Half-open eyes -->
+                        <ellipse cx="49" cy="92" rx="3" ry="3.5" fill="#2a1a0a"/>
+                        <ellipse cx="91" cy="92" rx="3" ry="3.5" fill="#2a1a0a"/>
+                        <circle cx="50" cy="91" r="1" fill="#fff"/>
+                        <circle cx="92" cy="91" r="1" fill="#fff"/>
+                        <!-- Content closed smile -->
+                        <path d="M 55,114 Q 70,124 85,114" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Happy face (after coffee) -->
+                    <g class="face-happy">
+                        <!-- Smile lines (closed crinkly eyes) -->
+                        <path d="M 40,90 Q 49,96 58,90" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M 82,90 Q 91,96 100,90" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <!-- Big smile -->
+                        <path d="M 50,112 Q 70,128 90,112" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Nose -->
+                    <ellipse cx="70" cy="104" rx="3" ry="4" fill="#e8b898" opacity="0.65"/>
+
+                    <!-- Cheeks (rosy) -->
+                    <circle cx="36" cy="108" r="7" fill="#ffa890" opacity="0.55" class="cheek"/>
+                    <circle cx="104" cy="108" r="7" fill="#ffa890" opacity="0.55" class="cheek"/>
                 </svg>
             </div>
 
-            <!-- Phil (right) -->
+            <!-- Phil (right, grumpy then happy — gradual) -->
             <div class="character phil" id="phil">
-                <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Body -->
-                    <rect x="22" y="118" width="56" height="80" fill="#6a3a3a" rx="6"/>
-                    <!-- Collar -->
-                    <path d="M 38,118 L 50,128 L 62,118 Z" fill="#4a2a2a"/>
+                <svg viewBox="0 0 140 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Scarf -->
+                    <ellipse cx="70" cy="166" rx="44" ry="14" fill="#5a6a48"/>
+
+                    <!-- Body / sweater -->
+                    <path d="M 22,170 Q 70,158 118,170 L 122,280 L 18,280 Z" fill="#a96850"/>
+                    <path d="M 30,180 L 30,278" stroke="#8a4d36" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+                    <path d="M 70,180 L 70,278" stroke="#8a4d36" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+                    <path d="M 110,180 L 110,278" stroke="#8a4d36" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+
                     <!-- Arms -->
-                    <rect x="10" y="120" width="14" height="60" fill="#6a3a3a" rx="6"/>
-                    <rect x="76" y="120" width="14" height="60" fill="#6a3a3a" rx="6"/>
+                    <ellipse cx="18" cy="220" rx="11" ry="36" fill="#a96850"/>
+                    <ellipse cx="122" cy="220" rx="11" ry="36" fill="#a96850"/>
                     <!-- Hands -->
-                    <circle cx="17" cy="182" r="9" fill="#f5d0a8"/>
-                    <circle cx="83" cy="182" r="9" fill="#f5d0a8"/>
-                    <!-- Neck -->
-                    <rect x="42" y="105" width="16" height="14" fill="#f5d0a8"/>
+                    <circle cx="18" cy="252" r="11" fill="#f5d4b8"/>
+                    <circle cx="122" cy="252" r="11" fill="#f5d4b8"/>
+
+                    <!-- Ears -->
+                    <ellipse cx="20" cy="92" rx="7" ry="10" fill="#f5d4b8"/>
+                    <ellipse cx="120" cy="92" rx="7" ry="10" fill="#f5d4b8"/>
+
                     <!-- Head -->
-                    <circle cx="50" cy="72" r="32" fill="#f5d0a8"/>
+                    <circle cx="70" cy="86" r="50" fill="#f5d4b8"/>
+
                     <!-- Hair (short, neat) -->
-                    <path d="M 22,64 Q 50,28 78,64 L 78,56 Q 50,26 22,56 Z" fill="#2a2a2a"/>
-                    <!-- Eyes -->
-                    <circle cx="40" cy="74" r="3" fill="#222"/>
-                    <circle cx="60" cy="74" r="3" fill="#222"/>
-                    <!-- Grumpy face (default) -->
-                    <g class="face-grumpy">
-                        <line x1="32" y1="62" x2="44" y2="68" stroke="#222" stroke-width="3" stroke-linecap="round"/>
-                        <line x1="56" y1="68" x2="68" y2="62" stroke="#222" stroke-width="3" stroke-linecap="round"/>
-                        <path d="M 38,92 Q 50,84 62,92" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 22,76 Q 70,32 118,76 L 118,62 Q 70,30 22,62 Z" fill="#3a2a1a"/>
+                    <!-- Side temple grey hint -->
+                    <path d="M 22,70 Q 26,62 30,68" stroke="#8a7a6a" stroke-width="1.5" fill="none"/>
+                    <path d="M 118,70 Q 114,62 110,68" stroke="#8a7a6a" stroke-width="1.5" fill="none"/>
+
+                    <!-- Eyes (always shown) -->
+                    <ellipse cx="50" cy="94" rx="3.2" ry="3.8" fill="#2a1a0a"/>
+                    <ellipse cx="90" cy="94" rx="3.2" ry="3.8" fill="#2a1a0a"/>
+                    <circle cx="51" cy="93" r="1" fill="#fff"/>
+                    <circle cx="91" cy="93" r="1" fill="#fff"/>
+
+                    <!-- Eye bags (tired) -->
+                    <path d="M 42,102 Q 50,106 58,102" stroke="#c8a48c" stroke-width="1.5" fill="none" opacity="0.55"/>
+                    <path d="M 82,102 Q 90,106 98,102" stroke="#c8a48c" stroke-width="1.5" fill="none" opacity="0.55"/>
+
+                    <!-- Eyebrows: grumpy → neutral → happy -->
+                    <g class="brows brows-grumpy">
+                        <path d="M 36,78 L 56,86" stroke="#2a1a0a" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M 84,86 L 104,78" stroke="#2a1a0a" stroke-width="4" stroke-linecap="round"/>
                     </g>
-                    <!-- Happy face (after coffee) -->
-                    <g class="face-happy">
-                        <line x1="32" y1="64" x2="44" y2="62" stroke="#222" stroke-width="3" stroke-linecap="round"/>
-                        <line x1="56" y1="62" x2="68" y2="64" stroke="#222" stroke-width="3" stroke-linecap="round"/>
-                        <path d="M 38,86 Q 50,96 62,86" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <circle cx="32" cy="82" r="3.5" fill="#ffb0a0" opacity="0.65"/>
-                        <circle cx="68" cy="82" r="3.5" fill="#ffb0a0" opacity="0.65"/>
+                    <g class="brows brows-neutral">
+                        <path d="M 36,82 L 56,82" stroke="#2a1a0a" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M 84,82 L 104,82" stroke="#2a1a0a" stroke-width="4" stroke-linecap="round"/>
                     </g>
+                    <g class="brows brows-happy">
+                        <path d="M 36,82 Q 46,76 56,82" stroke="#2a1a0a" stroke-width="4" stroke-linecap="round" fill="none"/>
+                        <path d="M 84,82 Q 94,76 104,82" stroke="#2a1a0a" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    </g>
+
+                    <!-- Mouth: grumpy → neutral → small smile → big smile -->
+                    <g class="mouth mouth-grumpy">
+                        <path d="M 52,120 Q 70,108 88,120" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <g class="mouth mouth-neutral">
+                        <line x1="56" y1="118" x2="84" y2="118" stroke="#3a2a1a" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                    <g class="mouth mouth-smile">
+                        <path d="M 56,116 Q 70,122 84,116" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    </g>
+                    <g class="mouth mouth-happy">
+                        <path d="M 50,114 Q 70,128 90,114" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Nose -->
+                    <ellipse cx="70" cy="106" rx="3" ry="4" fill="#e8b898" opacity="0.7"/>
+
+                    <!-- Cheeks -->
+                    <circle cx="36" cy="112" r="6" fill="#ffa890" opacity="0.35" class="cheek"/>
+                    <circle cx="104" cy="112" r="6" fill="#ffa890" opacity="0.35" class="cheek"/>
                 </svg>
             </div>
         </div>
 
         <div class="controls">
-            <button id="cappuccino-btn">☕ Order Cappuccino</button>
-            <button id="flatwhite-btn">🥛 Order Flat White</button>
+            <button id="cappuccino-btn" class="order-btn">
+                <span class="btn-icon">☕</span>
+                <span>Order Cappuccino</span>
+            </button>
+            <button id="flatwhite-btn" class="order-btn">
+                <span class="btn-icon">🥛</span>
+                <span>Order Flat White</span>
+            </button>
+            <button id="sound-toggle" class="sound-btn" aria-label="Toggle ambient sound" title="Toggle sound">
+                <span id="sound-icon">🔇</span>
+            </button>
         </div>
 
         <footer class="footer">
-            <p>made with ♥ for Paul &amp; Phil</p>
+            <p>made with ♥ for paul &amp; phil · click a button to begin the morning ritual</p>
         </footer>
     </div>
 
