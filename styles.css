@@ -938,26 +938,37 @@ body {
 /* ============ THOUGHT BUBBLES ============ */
 .bubble {
     position: absolute;
-    background: #fffaf0;
-    border: 3px solid var(--ink);
+    background: #fffaf3;
+    border: 2.5px solid rgba(58, 42, 26, 0.7);
     border-radius: 22px;
-    padding: 8px 14px;
-    font-family: 'Georgia', serif;
+    padding: 9px 14px;
+    font-family: 'Nunito', 'Quicksand', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-weight: 600;
     font-size: 14px;
-    font-style: italic;
+    line-height: 1.35;
     z-index: 9;
     color: var(--ink);
-    white-space: nowrap;
-    transition: transform 0.3s ease, opacity 0.4s;
-    box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.1);
+    max-width: 240px;
+    white-space: normal;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+    transition: opacity 0.6s ease, transform 0.5s ease;
+    box-shadow: 0 6px 16px rgba(58, 42, 26, 0.10), 0 2px 4px rgba(58, 42, 26, 0.06);
+    pointer-events: none;
+}
+.bubble.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 .bubble::before,
 .bubble::after {
     content: '';
     position: absolute;
-    background: #fffaf0;
-    border: 3px solid var(--ink);
+    background: #fffaf3;
+    border: 2.5px solid rgba(58, 42, 26, 0.7);
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(58, 42, 26, 0.06);
 }
 .bubble::before { width: 14px; height: 14px; bottom: -20px; }
 .bubble::after { width: 8px; height: 8px; bottom: -32px; }
