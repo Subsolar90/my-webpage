@@ -24,15 +24,9 @@ const soundIcon = document.getElementById('sound-icon');
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ============ AUDIO (procedural via Web Audio API) ============
-// Cozy café atmosphere: layered ambient (room tone + distant murmur + light
-// rain + sparse cup clinks + sparse lo-fi piano notes), soft brewing sounds.
+// Brewing sounds only. No background ambient — silence between drinks.
 let audioCtx = null;
 let masterGain = null;
-let ambientGain = null;       // umbrella gain for fade in/out
-let ambientSources = [];      // BufferSources / Oscillators to stop on cleanup
-let clinkTimerId = null;
-let musicTimerId = null;
-let musicNoteIndex = 0;
 let soundEnabled = false;
 
 function initAudio() {
@@ -80,187 +74,9 @@ function makePinkNoiseBuffer(duration) {
     return buffer;
 }
 
-// ---------- AMBIENT (multi-layer café atmosphere) ----------
-function startAmbient() {
-    initAudio();
-    if (!audioCtx || ambientGain) return;
-
-    ambientGain = audioCtx.createGain();
-    ambientGain.gain.value = 0;
-    ambientGain.connect(masterGain);
-
-    // Layer 1: warm room tone — pink noise, high-passed to remove sub rumble,
-    // low-passed for warmth. Cuts out the "train" feeling.
-    const room = audioCtx.createBufferSource();
-    room.buffer = makePinkNoiseBuffer(6);
-    room.loop = true;
-    const roomHP = audioCtx.createBiquadFilter();
-    roomHP.type = 'highpass';
-    roomHP.frequency.value = 140;
-    const roomLP = audioCtx.createBiquadFilter();
-    roomLP.type = 'lowpass';
-    roomLP.frequency.value = 900;
-    roomLP.Q.value = 0.5;
-    const roomG = audioCtx.createGain();
-    roomG.gain.value = 0.06;
-    room.connect(roomHP); roomHP.connect(roomLP); roomLP.connect(roomG);
-    roomG.connect(ambientGain);
-    room.start();
-
-    // Layer 2: distant conversation murmur — band-passed pink noise with very
-    // slow amplitude modulation suggesting the swell of voices.
-    const murmur = audioCtx.createBufferSource();
-    murmur.buffer = makePinkNoiseBuffer(8);
-    murmur.loop = true;
-    const murmurBP = audioCtx.createBiquadFilter();
-    murmurBP.type = 'bandpass';
-    murmurBP.frequency.value = 380;
-    murmurBP.Q.value = 0.9;
-    const murmurG = audioCtx.createGain();
-    murmurG.gain.value = 0.025;
-    const murmurLfo = audioCtx.createOscillator();
-    const murmurLfoG = audioCtx.createGain();
-    murmurLfo.frequency.value = 0.23;
-    murmurLfoG.gain.value = 0.012;
-    murmurLfo.connect(murmurLfoG);
-    murmurLfoG.connect(murmurG.gain);
-    murmur.connect(murmurBP); murmurBP.connect(murmurG);
-    murmurG.connect(ambientGain);
-    murmur.start();
-    murmurLfo.start();
-
-    // Layer 3: light rain on a windowpane — pink noise high-shelf + light
-    // band of "patter" frequencies, very low gain.
-    const rain = audioCtx.createBufferSource();
-    rain.buffer = makePinkNoiseBuffer(5);
-    rain.loop = true;
-    const rainHP = audioCtx.createBiquadFilter();
-    rainHP.type = 'highpass';
-    rainHP.frequency.value = 2200;
-    const rainLP = audioCtx.createBiquadFilter();
-    rainLP.type = 'lowpass';
-    rainLP.frequency.value = 6000;
-    const rainG = audioCtx.createGain();
-    rainG.gain.value = 0.04;
-    rain.connect(rainHP); rainHP.connect(rainLP); rainLP.connect(rainG);
-    rainG.connect(ambientGain);
-    rain.start();
-
-    ambientSources.push(room, murmur, murmurLfo, rain);
-
-    // Slow fade in (gentle, no abrupt start)
-    const t = audioCtx.currentTime;
-    ambientGain.gain.setValueAtTime(0, t);
-    ambientGain.gain.linearRampToValueAtTime(0.65, t + 3);
-
-    // Sparse cup clinks + sparse lo-fi piano notes
-    scheduleNextClink();
-    scheduleNextPianoNote(true);
-}
-
-function stopAmbient() {
-    if (!ambientGain || !audioCtx) return;
-    if (clinkTimerId !== null) { clearTimeout(clinkTimerId); clinkTimerId = null; }
-    if (musicTimerId !== null) { clearTimeout(musicTimerId); musicTimerId = null; }
-    const t = audioCtx.currentTime;
-    ambientGain.gain.cancelScheduledValues(t);
-    ambientGain.gain.setValueAtTime(ambientGain.gain.value, t);
-    ambientGain.gain.linearRampToValueAtTime(0, t + 1.2);
-    const sourcesToStop = ambientSources;
-    const gainToDisconnect = ambientGain;
-    ambientSources = [];
-    ambientGain = null;
-    setTimeout(() => {
-        sourcesToStop.forEach((s) => { try { s.stop(); } catch (e) {} });
-        try { gainToDisconnect.disconnect(); } catch (e) {}
-    }, 1400);
-}
-
-// Sparse, distant ceramic clinks (random soft cup-on-saucer taps)
-function scheduleNextClink() {
-    if (clinkTimerId !== null) clearTimeout(clinkTimerId);
-    const delay = 7000 + Math.random() * 12000;
-    clinkTimerId = setTimeout(() => {
-        if (!audioCtx || !ambientGain) return;
-        playAmbientClink();
-        scheduleNextClink();
-    }, delay);
-}
-
-function playAmbientClink() {
-    const t = audioCtx.currentTime;
-    const base = 2400 + Math.random() * 900;
-    // Two close partials — small, bright, but short
-    [base, base * 1.48].forEach((f, i) => {
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = f;
-        const startT = t + i * 0.012;
-        const peak = (0.008 + Math.random() * 0.008) * (i === 0 ? 1 : 0.5);
-        g.gain.setValueAtTime(0, startT);
-        g.gain.linearRampToValueAtTime(peak, startT + 0.004);
-        g.gain.exponentialRampToValueAtTime(0.0001, startT + 0.32);
-        osc.connect(g);
-        g.connect(ambientGain);
-        osc.start(startT);
-        osc.stop(startT + 0.36);
-    });
-}
-
-// ---------- OPTIONAL BACKGROUND MUSIC (sparse lo-fi piano) ----------
-// Slow ~70 BPM, no drums, gentle major7/min7 voicings. Volume sits below
-// ambient so it never distracts.
-const musicChords = [
-    [261.63, 329.63, 392.00, 493.88], // Cmaj7
-    [220.00, 277.18, 329.63, 415.30], // Amin7
-    [174.61, 220.00, 261.63, 349.23], // Fmaj7
-    [196.00, 246.94, 293.66, 392.00]  // Gmaj7
-];
-
-function scheduleNextPianoNote(first) {
-    if (musicTimerId !== null) clearTimeout(musicTimerId);
-    // ~70 BPM → ~857ms per beat. Notes every 2 beats with some humanization.
-    const delay = first ? 4000 : 1500 + Math.random() * 500;
-    musicTimerId = setTimeout(() => {
-        if (!audioCtx || !ambientGain) return;
-        playPianoNote();
-        scheduleNextPianoNote(false);
-    }, delay);
-}
-
-function playPianoNote() {
-    const chordIdx = Math.floor(musicNoteIndex / 4) % musicChords.length;
-    const chord = musicChords[chordIdx];
-    const noteIdx = musicNoteIndex % chord.length;
-    musicNoteIndex++;
-    const freq = chord[noteIdx];
-
-    const t = audioCtx.currentTime;
-    // Pseudo-piano: a few sine partials with quick attack & long exp decay
-    const partials = [
-        { mult: 1,   gain: 0.022, decay: 3.0 },
-        { mult: 2,   gain: 0.008, decay: 2.0 },
-        { mult: 3,   gain: 0.003, decay: 1.4 }
-    ];
-    partials.forEach((p) => {
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq * p.mult;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(p.gain, t + 0.015);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + p.decay);
-        osc.connect(g);
-        g.connect(ambientGain);
-        osc.start(t);
-        osc.stop(t + p.decay + 0.1);
-    });
-}
-
 // ---------- BREWING / MACHINE SOUNDS ----------
 
-// Soft, warm grinder — low rumble, no buzzy mid
+// Grinder — warm low rumble (pink noise, low-passed)
 function playGrinder(duration = 2.8) {
     if (!soundEnabled || !audioCtx) return;
     const t = audioCtx.currentTime;
@@ -271,19 +87,19 @@ function playGrinder(duration = 2.8) {
     hp.frequency.value = 90;
     const lp = audioCtx.createBiquadFilter();
     lp.type = 'lowpass';
-    lp.frequency.value = 480;
+    lp.frequency.value = 520;
     lp.Q.value = 0.6;
     const gain = audioCtx.createGain();
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.045, t + 0.5);
-    gain.gain.setValueAtTime(0.045, t + duration - 0.6);
+    gain.gain.linearRampToValueAtTime(0.13, t + 0.4);
+    gain.gain.setValueAtTime(0.13, t + duration - 0.5);
     gain.gain.linearRampToValueAtTime(0, t + duration);
     src.connect(hp); hp.connect(lp); lp.connect(gain); gain.connect(masterGain);
     src.start(t);
     src.stop(t + duration);
 }
 
-// Two soft tamping thuds — gentle, low-passed
+// Two soft tamping thuds — low-passed
 function playTamp() {
     if (!soundEnabled || !audioCtx) return;
     for (let i = 0; i < 2; i++) {
@@ -292,11 +108,11 @@ function playTamp() {
         src.buffer = makeWhiteNoiseBuffer(0.14);
         const lp = audioCtx.createBiquadFilter();
         lp.type = 'lowpass';
-        lp.frequency.value = 180;
+        lp.frequency.value = 200;
         const g = audioCtx.createGain();
         const t = audioCtx.currentTime + offset;
         g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.11, t + 0.012);
+        g.gain.linearRampToValueAtTime(0.18, t + 0.012);
         g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
         src.connect(lp); lp.connect(g); g.connect(masterGain);
         src.start(t);
@@ -304,84 +120,157 @@ function playTamp() {
     }
 }
 
-// Espresso pull: gentle muffled hiss + slow gurgles + soft drip trickle
+// Espresso pull: deep warm pressurised hiss + low pump rumble + slow drips
 function playPull(duration = 4) {
     if (!soundEnabled || !audioCtx) return;
     const t = audioCtx.currentTime;
 
-    // Muffled hiss body — pink noise, heavy low-pass (no harsh top end)
+    // Layer A — warm mid-band hiss (the pressurised water through grounds)
+    const body = audioCtx.createBufferSource();
+    body.buffer = makePinkNoiseBuffer(duration);
+    const bodyHP = audioCtx.createBiquadFilter();
+    bodyHP.type = 'highpass';
+    bodyHP.frequency.value = 200;
+    const bodyLP = audioCtx.createBiquadFilter();
+    bodyLP.type = 'lowpass';
+    bodyLP.frequency.value = 1500;
+    bodyLP.Q.value = 0.6;
+    const bodyG = audioCtx.createGain();
+    bodyG.gain.setValueAtTime(0, t);
+    bodyG.gain.linearRampToValueAtTime(0.20, t + 0.7);
+    bodyG.gain.setValueAtTime(0.20, t + duration - 0.8);
+    bodyG.gain.linearRampToValueAtTime(0, t + duration);
+    body.connect(bodyHP); bodyHP.connect(bodyLP); bodyLP.connect(bodyG);
+    bodyG.connect(masterGain);
+    body.start(t);
+    body.stop(t + duration);
+
+    // Layer B — low pump/pressure rumble (gives it weight & "real machine" feel)
+    const rumble = audioCtx.createBufferSource();
+    rumble.buffer = makePinkNoiseBuffer(duration);
+    const rumbleHP = audioCtx.createBiquadFilter();
+    rumbleHP.type = 'highpass';
+    rumbleHP.frequency.value = 55;
+    const rumbleLP = audioCtx.createBiquadFilter();
+    rumbleLP.type = 'lowpass';
+    rumbleLP.frequency.value = 200;
+    const rumbleG = audioCtx.createGain();
+    rumbleG.gain.setValueAtTime(0, t);
+    rumbleG.gain.linearRampToValueAtTime(0.16, t + 0.6);
+    rumbleG.gain.setValueAtTime(0.16, t + duration - 0.7);
+    rumbleG.gain.linearRampToValueAtTime(0, t + duration);
+    rumble.connect(rumbleHP); rumbleHP.connect(rumbleLP); rumbleLP.connect(rumbleG);
+    rumbleG.connect(masterGain);
+    rumble.start(t);
+    rumble.stop(t + duration);
+
+    // Slow pressure modulation on the body — gives the hiss a subtle "pulsing"
+    // feel like a real pump cycle.
+    const lfo = audioCtx.createOscillator();
+    const lfoG = audioCtx.createGain();
+    lfo.frequency.value = 3;
+    lfoG.gain.value = 0.04;
+    lfo.connect(lfoG);
+    lfoG.connect(bodyG.gain);
+    lfo.start(t);
+    lfo.stop(t + duration);
+
+    // Drips/trickle into the cup — you can hear it filling
+    const drips = Math.max(7, Math.floor(duration * 3));
+    for (let i = 0; i < drips; i++) {
+        const dT = t + 0.8 + (i / drips) * (duration - 1.6) + (Math.random() - 0.5) * 0.22;
+        scheduleDrip(dT, 0.10 + Math.random() * 0.05);
+    }
+}
+
+// Single drip/plop — falling sine + tiny noise click. Used for cup filling.
+function scheduleDrip(time, amp = 0.1) {
+    // Falling-pitch sine = classic "drip into water" sound
+    const osc = audioCtx.createOscillator();
+    const oscG = audioCtx.createGain();
+    osc.type = 'sine';
+    const startFreq = 900 + Math.random() * 400;
+    osc.frequency.setValueAtTime(startFreq, time);
+    osc.frequency.exponentialRampToValueAtTime(startFreq * 0.35, time + 0.09);
+    oscG.gain.setValueAtTime(0, time);
+    oscG.gain.linearRampToValueAtTime(amp, time + 0.006);
+    oscG.gain.exponentialRampToValueAtTime(0.0001, time + 0.18);
+    osc.connect(oscG);
+    oscG.connect(masterGain);
+    osc.start(time);
+    osc.stop(time + 0.2);
+
+    // Tiny watery splash transient on impact
+    const splash = audioCtx.createBufferSource();
+    splash.buffer = makeWhiteNoiseBuffer(0.06);
+    const splashBP = audioCtx.createBiquadFilter();
+    splashBP.type = 'bandpass';
+    splashBP.frequency.value = 1400;
+    splashBP.Q.value = 1.4;
+    const splashG = audioCtx.createGain();
+    splashG.gain.setValueAtTime(0, time);
+    splashG.gain.linearRampToValueAtTime(amp * 0.5, time + 0.003);
+    splashG.gain.exponentialRampToValueAtTime(0.0001, time + 0.07);
+    splash.connect(splashBP); splashBP.connect(splashG); splashG.connect(masterGain);
+    splash.start(time);
+    splash.stop(time + 0.08);
+}
+
+// Milk steaming: rough, airy steamer wand — bright hiss + turbulent mid-body
+function playSteam(duration = 2.5) {
+    if (!soundEnabled || !audioCtx) return;
+    const t = audioCtx.currentTime;
+
+    // Layer A — bright airy hiss (white noise, high-passed). This is the
+    // dominant character of a real steam wand.
     const hiss = audioCtx.createBufferSource();
-    hiss.buffer = makePinkNoiseBuffer(duration);
+    hiss.buffer = makeWhiteNoiseBuffer(duration);
     const hissHP = audioCtx.createBiquadFilter();
     hissHP.type = 'highpass';
-    hissHP.frequency.value = 220;
+    hissHP.frequency.value = 1800;
     const hissLP = audioCtx.createBiquadFilter();
     hissLP.type = 'lowpass';
-    hissLP.frequency.value = 1100;
-    hissLP.Q.value = 0.5;
+    hissLP.frequency.value = 7500;
     const hissG = audioCtx.createGain();
     hissG.gain.setValueAtTime(0, t);
-    hissG.gain.linearRampToValueAtTime(0.03, t + 0.8);
-    hissG.gain.setValueAtTime(0.03, t + duration - 0.9);
+    hissG.gain.linearRampToValueAtTime(0.15, t + 0.35);
+    hissG.gain.setValueAtTime(0.15, t + duration - 0.45);
     hissG.gain.linearRampToValueAtTime(0, t + duration);
     hiss.connect(hissHP); hissHP.connect(hissLP); hissLP.connect(hissG);
     hissG.connect(masterGain);
     hiss.start(t);
     hiss.stop(t + duration);
 
-    // Slow, satisfying drip/trickle gurgles into the cup
-    const drips = Math.max(4, Math.floor(duration * 2.2));
-    for (let i = 0; i < drips; i++) {
-        const dT = t + 0.6 + (i / drips) * (duration - 1.2) + (Math.random() - 0.5) * 0.18;
-        scheduleGurgle(dT, 130 + Math.random() * 90, 0.022 + Math.random() * 0.012);
-    }
-}
+    // Layer B — turbulent mid-body (pink noise band, modulated cutoff for the
+    // "rough" sputtering quality of milk churning under the wand)
+    const body = audioCtx.createBufferSource();
+    body.buffer = makePinkNoiseBuffer(duration);
+    const bodyHP = audioCtx.createBiquadFilter();
+    bodyHP.type = 'highpass';
+    bodyHP.frequency.value = 400;
+    const bodyLP = audioCtx.createBiquadFilter();
+    bodyLP.type = 'lowpass';
+    bodyLP.frequency.value = 2200;
+    const bodyG = audioCtx.createGain();
+    bodyG.gain.setValueAtTime(0, t);
+    bodyG.gain.linearRampToValueAtTime(0.11, t + 0.35);
+    bodyG.gain.setValueAtTime(0.11, t + duration - 0.45);
+    bodyG.gain.linearRampToValueAtTime(0, t + duration);
+    body.connect(bodyHP); bodyHP.connect(bodyLP); bodyLP.connect(bodyG);
+    bodyG.connect(masterGain);
+    body.start(t);
+    body.stop(t + duration);
 
-// Pitched "bloop" — a tiny rising sine, used for gurgles and bubbles
-function scheduleGurgle(time, baseFreq, amp) {
-    const osc = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(baseFreq, time);
-    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.6, time + 0.09);
-    g.gain.setValueAtTime(0, time);
-    g.gain.linearRampToValueAtTime(amp, time + 0.018);
-    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.14);
-    osc.connect(g);
-    g.connect(masterGain);
-    osc.start(time);
-    osc.stop(time + 0.16);
-}
-
-// Milk steaming: quiet, soft bubbling — gentle simmer, not kettle boil
-function playSteam(duration = 2.5) {
-    if (!soundEnabled || !audioCtx) return;
-    const t = audioCtx.currentTime;
-
-    // Warm, muffled airy bed (no shrill high-pass)
-    const src = audioCtx.createBufferSource();
-    src.buffer = makePinkNoiseBuffer(duration);
-    const hp = audioCtx.createBiquadFilter();
-    hp.type = 'highpass';
-    hp.frequency.value = 350;
-    const lp = audioCtx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 1800;
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.022, t + 0.6);
-    gain.gain.setValueAtTime(0.022, t + duration - 0.7);
-    gain.gain.linearRampToValueAtTime(0, t + duration);
-    src.connect(hp); hp.connect(lp); lp.connect(gain); gain.connect(masterGain);
-    src.start(t);
-    src.stop(t + duration);
-
-    // Soft bubbles — sparse, gentle simmer
-    const bubbles = Math.max(5, Math.floor(duration * 4));
-    for (let i = 0; i < bubbles; i++) {
-        const bT = t + 0.4 + (i / bubbles) * (duration - 0.9) + (Math.random() - 0.5) * 0.12;
-        scheduleGurgle(bT, 260 + Math.random() * 220, 0.012 + Math.random() * 0.008);
-    }
+    // Turbulence: LFO on body filter cutoff = irregular churning quality
+    const lfo = audioCtx.createOscillator();
+    const lfoG = audioCtx.createGain();
+    lfo.type = 'sawtooth';
+    lfo.frequency.value = 7;
+    lfoG.gain.value = 600;
+    lfo.connect(lfoG);
+    lfoG.connect(bodyLP.frequency);
+    lfo.start(t);
+    lfo.stop(t + duration);
 }
 
 // Soft sip — warm, breathy, brief
@@ -399,24 +288,24 @@ function playSip() {
     bp.frequency.linearRampToValueAtTime(560, t + duration);
     const gain = audioCtx.createGain();
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.07, t + 0.06);
-    gain.gain.linearRampToValueAtTime(0.025, t + 0.32);
+    gain.gain.linearRampToValueAtTime(0.09, t + 0.06);
+    gain.gain.linearRampToValueAtTime(0.03, t + 0.32);
     gain.gain.linearRampToValueAtTime(0, t + duration);
     src.connect(bp); bp.connect(gain); gain.connect(masterGain);
     src.start(t);
     src.stop(t + duration);
 }
 
-// Warm bell-like completion chime — fundamental + soft harmonics, long decay
+// Warm completion chime — single C5 bell with soft harmonics
 function playSoftChime() {
     if (!soundEnabled || !audioCtx) return;
     const t = audioCtx.currentTime;
     const fundamental = 523.25; // C5
     const partials = [
-        { mult: 0.5, gain: 0.018, decay: 2.4 },
-        { mult: 1,   gain: 0.055, decay: 2.0 },
-        { mult: 2,   gain: 0.022, decay: 1.5 },
-        { mult: 3,   gain: 0.010, decay: 1.0 }
+        { mult: 0.5, gain: 0.04,  decay: 2.6 },
+        { mult: 1,   gain: 0.13,  decay: 2.2 },
+        { mult: 2,   gain: 0.05,  decay: 1.6 },
+        { mult: 3,   gain: 0.022, decay: 1.1 }
     ];
     partials.forEach((p) => {
         const osc = audioCtx.createOscillator();
@@ -444,9 +333,6 @@ function setSoundEnabled(on) {
         if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
-        startAmbient();
-    } else {
-        stopAmbient();
     }
 }
 
